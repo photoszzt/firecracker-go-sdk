@@ -120,17 +120,21 @@ func (cfg *Config) Validate() error {
 		return fmt.Errorf("failed to stat kernel image path, %q: %v", cfg.KernelImagePath, err)
 	}
 
-	rootPath := ""
-	for _, drive := range cfg.Drives {
-		if BoolValue(drive.IsRootDevice) {
-			rootPath = StringValue(drive.PathOnHost)
-			break
-		}
-	}
+	// With root drive specify, it will automatically add a root=/dev/vda
+	// to the kernel commandline which is not supported by osv. The
+	// following assertion will be failed with osv image. Disable checking
+	// for now.
+	// rootPath := ""
+	// for _, drive := range cfg.Drives {
+	// 	if BoolValue(drive.IsRootDevice) {
+	// 		rootPath = StringValue(drive.PathOnHost)
+	// 		break
+	// 	}
+	// }
 
-	if _, err := os.Stat(rootPath); err != nil {
-		return fmt.Errorf("failed to stat host path, %q: %v", rootPath, err)
-	}
+	// if _, err := os.Stat(rootPath); err != nil {
+	// 	return fmt.Errorf("failed to stat host path, %q: %v", rootPath, err)
+	// }
 
 	// Check the non-existence of some files:
 	if _, err := os.Stat(cfg.SocketPath); err == nil {
